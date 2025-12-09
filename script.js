@@ -1,3 +1,51 @@
+// HIỆU ỨNG NỀN MATRIX MƯA SỐ 0 1
+const canvas = document.getElementById('matrix-canvas');
+const ctx = canvas.getContext('2d');
+
+// Thiết lập kích thước canvas phù hợp màn hình
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+// Ký tự 0 1
+const letters = ['0', '1'];
+const fontSize = 18;
+let columns = Math.floor(canvas.width / fontSize);
+
+let drops = [];
+function initDrops() {
+    columns = Math.floor(canvas.width / fontSize);
+    drops = [];
+    for (let i = 0; i < columns; i++) {
+        drops[i] = Math.random() * canvas.height / fontSize;
+    }
+}
+initDrops();
+window.addEventListener('resize', initDrops);
+
+function drawMatrix() {
+    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.font = fontSize + 'px monospace';
+    ctx.fillStyle = '#0F0';
+    for (let i = 0; i < drops.length; i++) {
+        const text = letters[Math.floor(Math.random() * letters.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+        }
+        drops[i] += 1;
+    }
+}
+setInterval(drawMatrix, 40);
+
+// ---------------------- GAME CARO ----------------------
+
 const board = document.getElementById('board');
 const statusDiv = document.getElementById('status');
 const resetBtn = document.getElementById('reset');

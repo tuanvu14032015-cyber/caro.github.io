@@ -1,16 +1,31 @@
+/* Nền Matrix */
+#matrix-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    background: #000;
+}
+
+/* Game Caro */
 body {
     font-family: Arial, Helvetica, sans-serif;
-    background: #eef;
+    background: transparent;
     text-align: center;
 }
 
 #game {
     margin: 30px auto;
     padding: 20px;
-    background: #fff;
+    background: rgba(255,255,255,0.80);
     border-radius: 15px;
     width: 320px;
     box-shadow: 0 0 10px #aaa;
+    position: relative;
+    z-index: 1;
 }
 
 #board {

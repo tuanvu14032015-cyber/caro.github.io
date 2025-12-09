@@ -70,6 +70,8 @@ function resetGame() {
     gameActive = true;
     cells.forEach(cell => cell.textContent = "");
     statusDiv.textContent = "Lượt của người chơi: " + currentPlayer;
+    // Ẩn jumpscare nếu đang hiện
+    document.getElementById('jumpscare').style.display = 'none';
 }
 
 function handleCellClick(index) {
@@ -81,6 +83,11 @@ function handleCellClick(index) {
     if (checkWin()) {
         statusDiv.textContent = "Người chơi " + currentPlayer + " thắng!";
         gameActive = false;
+
+        // Xác định người thua và show jumpscare
+        const loser = currentPlayer === "X" ? "O" : "X";
+        showJumpscare(loser);
+
     } else if (boardState.every(cell => cell !== "")) {
         statusDiv.textContent = "Hòa!";
         gameActive = false;
@@ -96,9 +103,24 @@ function checkWin() {
         [0,3,6],[1,4,7],[2,5,8], // Cột
         [0,4,8],[2,4,6]            // Chéo
     ];
-    return winCombinations.some(comb => 
+    return winCombinations.some(comb =>
         comb.every(idx => boardState[idx] === currentPlayer)
     );
+}
+
+// Hàm hiện jumpscare
+function showJumpscare(loser) {
+    const jumpscare = document.getElementById('jumpscare');
+    const jumpscareText = document.getElementById('jumpscare-text');
+    jumpscare.style.display = 'flex';
+    jumpscareText.textContent = `Người chơi ${loser} đã thua! 😱`;
+    // Thêm tiếng hét nếu muốn
+    const scream = new Audio('https://www.soundjay.com/human/sounds/scream-01.mp3');
+    scream.play();
+    // Click vào jumpscare để tắt
+    jumpscare.onclick = function() {
+        jumpscare.style.display = 'none';
+    };
 }
 
 // Khởi tạo

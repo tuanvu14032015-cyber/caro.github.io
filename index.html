@@ -9,16 +9,20 @@
 <body>
     <!-- NỀN MATRIX -->
     <canvas id="matrix-canvas"></canvas>
-    <!-- GAME CARO -->
-    <h1>Cờ Caro (Tic-Tac-Toe)</h1>
-    <div id="game">
-        <div id="board"></div>
-        <div id="status"></div>
-        <button id="reset">Chơi lại</button>
+    <!-- BỌC NGOÀI ĐỂ CĂN GIỮA -->
+    <div id="game-wrapper">
+        <h1>Cờ Caro (Tic-Tac-Toe)</h1>
+        <div id="game">
+            <div id="board"></div>
+            <div id="status"></div>
+            <div class="reset-wrapper">
+                <button id="reset">Chơi lại</button>
+            </div>
+        </div>
     </div>
     <!-- Jumpscare Overlay -->
     <div id="jumpscare" style="display:none;">
-        <img id="jumpscare-img" src="https://i.imgur.com/3R9tNYu.png" alt="Jumpscare" />
+        <img id="jumpscare-img" src="https://raw.githubusercontent.com/daattali/beautiful-jekyll/master/assets/img/404-monster.png" alt="Jumpscare" />
         <div id="jumpscare-text">Bạn đã thua! 😱</div>
     </div>
     <script src="script.js"></script>

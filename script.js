@@ -1,130 +1,83 @@
-// HIỆU ỨNG NỀN MATRIX MƯA SỐ 0 1
-const canvas = document.getElementById('matrix-canvas');
-const ctx = canvas.getContext('2d');
+const size = 5; // 🔥 đổi 9 thành 5
+const board = document.getElementById("board");
+const statusText = document.getElementById("status");
+const resetBtn = document.getElementById("reset");
 
-// Thiết lập kích thước canvas phù hợp màn hình
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
-
-// Ký tự 0 1
-const letters = ['0', '1'];
-const fontSize = 18;
-let columns = Math.floor(canvas.width / fontSize);
-
-let drops = [];
-function initDrops() {
-    columns = Math.floor(canvas.width / fontSize);
-    drops = [];
-    for (let i = 0; i < columns; i++) {
-        drops[i] = Math.random() * canvas.height / fontSize;
-    }
-}
-initDrops();
-window.addEventListener('resize', initDrops);
-
-function drawMatrix() {
-    ctx.fillStyle = 'rgba(0,0,0,0.15)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.font = fontSize + 'px monospace';
-    ctx.fillStyle = '#0F0';
-    for (let i = 0; i < drops.length; i++) {
-        const text = letters[Math.floor(Math.random() * letters.length)];
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-            drops[i] = 0;
-        }
-        drops[i] += 1;
-    }
-}
-setInterval(drawMatrix, 40);
-
-// ---------------------- GAME CARO ----------------------
-
-const board = document.getElementById('board');
-const statusDiv = document.getElementById('status');
-const resetBtn = document.getElementById('reset');
-
-let cells, currentPlayer, boardState, gameActive;
+let cells = [];
+let currentPlayer = "X";
+let gameOver = false;
 
 function createBoard() {
-    board.innerHTML = '';
+    board.innerHTML = "";
     cells = [];
-    for (let i = 0; i < 9; i++) {
-        const cell = document.createElement('div');
-        cell.classList.add('cell');
-        cell.addEventListener('click', () => handleCellClick(i));
+
+    for (let i = 0; i < size * size; i++) {
+        const cell = document.createElement("div");
+        cell.classList.add("cell");
+        cell.dataset.index = i;
+        cell.addEventListener("click", handleClick);
         board.appendChild(cell);
-        cells.push(cell);
+        cells.push("");
     }
+
+    statusText.textContent = "Lượt của X";
+    gameOver = false;
 }
 
-function resetGame() {
-    currentPlayer = "X";
-    boardState = Array(9).fill("");
-    gameActive = true;
-    cells.forEach(cell => cell.textContent = "");
-    statusDiv.textContent = "Lượt của người chơi: " + currentPlayer;
-    // Ẩn jumpscare nếu đang hiện
-    document.getElementById('jumpscare').style.display = 'none';
-}
+function handleClick(e) {
+    const index = e.target.dataset.index;
 
-function handleCellClick(index) {
-    if (!gameActive || boardState[index] !== "") return;
+    if (cells[index] !== "" || gameOver) return;
 
-    boardState[index] = currentPlayer;
-    cells[index].textContent = currentPlayer;
+    cells[index] = currentPlayer;
+    e.target.textContent = currentPlayer;
 
-    if (checkWin()) {
-        statusDiv.textContent = "Người chơi " + currentPlayer + " thắng!";
-        gameActive = false;
-
-        // Xác định người thua và show jumpscare
-        const loser = currentPlayer === "X" ? "O" : "X";
-        showJumpscare(loser);
-
-    } else if (boardState.every(cell => cell !== "")) {
-        statusDiv.textContent = "Hòa!";
-        gameActive = false;
-    } else {
-        currentPlayer = (currentPlayer === "X") ? "O" : "X";
-        statusDiv.textContent = "Lượt của người chơi: " + currentPlayer;
+    if (checkWin(currentPlayer)) {
+        statusText.textContent = `${currentPlayer} thắng!`;
+        gameOver = true;
+        return;
     }
+
+    currentPlayer = currentPlayer === "X" ? "O" : "X";
+    statusText.textContent = `Lượt của ${currentPlayer}`;
 }
 
-function checkWin() {
-    const winCombinations = [
-        [0,1,2],[3,4,5],[6,7,8], // Hàng
-        [0,3,6],[1,4,7],[2,5,8], // Cột
-        [0,4,8],[2,4,6]            // Chéo
-    ];
-    return winCombinations.some(comb =>
-        comb.every(idx => boardState[idx] === currentPlayer)
-    );
+function checkWin(player) {
+    // kiểm tra hàng
+    for (let r = 0; r < size; r++) {
+        let ok = true;
+        for (let c = 0; c < size; c++) {
+            if (cells[r * size + c] !== player) ok = false;
+        }
+        if (ok) return true;
+    }
+
+    // kiểm tra cột
+    for (let c = 0; c < size; c++) {
+        let ok = true;
+        for (let r = 0; r < size; r++) {
+            if (cells[r * size + c] !== player) ok = false;
+        }
+        if (ok) return true;
+    }
+
+    // chéo chính
+    let ok1 = true;
+    for (let i = 0; i < size; i++) {
+        if (cells[i * size + i] !== player) ok1 = false;
+    }
+    if (ok1) return true;
+
+    // chéo phụ
+    let ok2 = true;
+    for (let i = 0; i < size; i++) {
+        if (cells[i * size + (size - i - 1)] !== player) ok2 = false;
+    }
+    if (ok2) return true;
+
+    return false;
 }
 
-// Hàm hiện jumpscare
-function showJumpscare(loser) {
-    const jumpscare = document.getElementById('jumpscare');
-    const jumpscareText = document.getElementById('jumpscare-text');
-    jumpscare.style.display = 'flex';
-    jumpscareText.textContent = `Người chơi ${loser} đã thua! 😱`;
-    // Thêm tiếng hét nếu muốn
-    const scream = new Audio('https://www.soundjay.com/human/sounds/scream-01.mp3');
-    scream.play();
-    // Click vào jumpscare để tắt
-    jumpscare.onclick = function() {
-        jumpscare.style.display = 'none';
-    };
-}
+resetBtn.addEventListener("click", createBoard);
 
-// Khởi tạo
 createBoard();
-resetGame();
-
-resetBtn.addEventListener('click', resetGame);
